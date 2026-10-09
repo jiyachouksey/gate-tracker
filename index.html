@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jiya's GATE DA Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   🎨 EDIT YOUR COLORS HERE
+   Change any hex code below and the whole site updates.
+   ========================================================== */
+:root{
+  --bg:#FFF4F8;        /* page background (blush) */
+  --bg2:#FFE6EF;       /* soft panels, bar tracks */
+  --card:#FFFFFF;      /* card background */
+  --ink:#4B3358;       /* main text + borders (plum) */
+  --muted:#8C7798;     /* secondary text */
+  --pop:#FFB8CF;       /* card offset shadow */
+  --pink:#FF8FB1;
+  --lav:#B9A4FF;
+  --mint:#8FE3C8;
+  --peach:#FFC49B;
+  --sky:#9AD7FF;
+  --butter:#FFE08A;
+  --danger:#E8456E;
+  --f-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Nunito','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#21172B; --bg2:#2E2139; --card:#33263F; --ink:#FBE9F3; --muted:#B9A5C6; --pop:#6B3F7D; --danger:#FF7D9C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#21172B; --bg2:#2E2139; --card:#33263F; --ink:#FBE9F3; --muted:#B9A5C6; --pop:#6B3F7D; --danger:#FF7D9C;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-weight:600;font-size:15px;line-height:1.45;min-height:100vh}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.6rem,4vw,2.2rem)}
+h2{font-size:1.35rem}
+h3{font-size:1.1rem}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--lav);outline-offset:2px}
+.muted{color:var(--muted)}
+.tiny{font-size:.8rem}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+.nav{position:sticky;top:0;height:100vh;padding:20px 14px;display:flex;flex-direction:column;gap:6px;background:var(--bg2);border-right:2px solid var(--ink)}
+.brand{font-family:var(--f-display);font-size:1.25rem;font-weight:600;padding:6px 10px 14px;display:flex;gap:8px;align-items:center;line-height:1.1}
+.brand small{display:block;font-family:var(--f-body);font-weight:700;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;color:var(--ink);text-decoration:none;font-weight:700;border:2px solid transparent}
+.nav a:hover{background:var(--card)}
+.nav a.on{background:var(--card);border-color:var(--ink);box-shadow:3px 3px 0 var(--pop)}
+.nav .sp{flex:1}
+main{padding:28px clamp(16px,3vw,36px) 60px;max-width:1100px;width:100%;margin-inline:auto;min-width:0}
+.page-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.end{justify-content:flex-end}
+.row.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:10px}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:18px;box-shadow:4px 4px 0 var(--pop);min-width:0}
+.card.flat{box-shadow:none}
+.card h2,.card h3{margin-bottom:10px}
+.hero{background:linear-gradient(135deg,var(--pink),var(--lav));color:#3A2547;border-color:var(--ink);position:relative;overflow:hidden}
+.hero .muted{color:#5B4068}
+.hero .sticker{position:absolute;right:14px;top:8px;font-size:3.2rem;transform:rotate(10deg);opacity:.95}
+
+/* ---------- buttons ---------- */
+.btn{background:var(--pink);color:#3A2547;border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .08s}
+.btn:hover{transform:translate(-1px,-1px)}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn.ghost{background:var(--card);color:var(--ink)}
+.btn.mint{background:var(--mint)}
+.btn.lav{background:var(--lav)}
+.btn.sm{padding:3px 11px;font-size:.85rem}
+.icon-btn{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-weight:800;line-height:1;display:grid;place-items:center;padding:0}
+.icon-btn:hover{background:var(--butter)}
+.icon-btn.del:hover{background:var(--danger);color:#fff}
+
+/* ---------- bits ---------- */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;border:2px solid var(--ink);font-size:.78rem;font-weight:800;background:color-mix(in srgb,var(--c,var(--lav)) 45%,var(--card));color:var(--ink);white-space:nowrap}
+.chip.live{--c:var(--mint)} .chip.soon{--c:var(--butter)} .chip.ended{--c:var(--bg2)} .chip.warn{--c:var(--danger);color:#fff}
+.bar{height:16px;background:var(--bg2);border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c,var(--pink));border-right:2px solid var(--ink);min-width:0}
+.bar i[style*="width:0%"]{border-right:0}
+.pill-stat{display:flex;flex-direction:column;gap:2px}
+.pill-stat b{font-family:var(--f-display);font-size:1.9rem;line-height:1;font-weight:600}
+.empty{text-align:center;padding:26px 12px;color:var(--muted)}
+.empty .big{font-size:2.4rem;display:block}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--butter) 55%,var(--card));border:2px dashed var(--ink)}
+
+/* ---------- lists ---------- */
+.item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:2px dotted color-mix(in srgb,var(--ink) 25%,transparent)}
+.item:last-child{border-bottom:0}
+.item .grow{flex:1;min-width:0}
+.item .t{overflow-wrap:anywhere}
+.check{width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;display:grid;place-items:center;font-size:.9rem;flex:none;padding:0}
+.check.on{background:var(--mint)}
+.done .t{text-decoration:line-through;color:var(--muted)}
+.counter{display:flex;gap:8px;align-items:center}
+.counter b{min-width:3.2ch;text-align:center}
+
+/* ---------- ring + charts ---------- */
+.ring{position:relative;width:130px;height:130px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .mid{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-family:var(--f-display);line-height:1.1}
+.week{display:flex;gap:8px;align-items:flex-end;height:150px;padding-top:8px}
+.week .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;min-width:0}
+.week .b{width:100%;max-width:38px;border:2px solid var(--ink);border-radius:10px 10px 4px 4px;background:var(--pink);min-height:4px}
+.week .b.today{background:var(--lav)}
+.week small{font-size:.72rem;color:var(--muted)}
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:320px}
+.heat i{aspect-ratio:1;border-radius:8px;border:2px solid var(--ink);background:var(--bg2)}
+.heat i.l1{background:color-mix(in srgb,var(--pink) 35%,var(--card))}
+.heat i.l2{background:color-mix(in srgb,var(--pink) 65%,var(--card))}
+.heat i.l3{background:var(--pink)}
+.heat i.t{outline:3px solid var(--lav);outline-offset:1px}
+
+/* ---------- timer ---------- */
+.clock{font-family:var(--f-display);font-size:clamp(2.6rem,9vw,4rem);font-weight:600;letter-spacing:.02em;text-align:center}
+
+/* ---------- notes / formulas ---------- */
+.thumb{width:100%;max-height:220px;object-fit:cover;border-radius:14px;border:2px solid var(--ink);cursor:zoom-in;background:var(--bg2);display:block}
+.formula{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:1.02rem;background:var(--bg2);border:2px dashed var(--ink);border-radius:14px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.note-text{white-space:pre-wrap;overflow-wrap:anywhere}
+input[type=search],input[type=text],input[type=number],input[type=date],select,textarea{width:100%;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:9px 12px}
+textarea{min-height:110px;resize:vertical}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{font-weight:800;font-size:.85rem}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;cursor:pointer}
+.tabs button.on{background:var(--lav);color:#3A2547;box-shadow:2px 2px 0 var(--ink)}
+
+/* ---------- dialog + toast ---------- */
+dialog{border:2px solid var(--ink);border-radius:24px;padding:22px;background:var(--card);color:var(--ink);width:min(480px,calc(100vw - 32px));box-shadow:6px 6px 0 var(--pop)}
+dialog::backdrop{background:rgba(75,51,88,.45)}
+dialog img.big{max-width:100%;max-height:75vh;display:block;margin:auto;border-radius:12px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:999px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:calc(100vw - 32px)}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+/* ---------- phone ---------- */
+@media (max-width:760px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .nav{position:fixed;inset:auto 0 0 0;top:auto;height:auto;flex-direction:row;overflow-x:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));border-right:0;border-top:2px solid var(--ink);z-index:50;gap:4px}
+  .nav .brand,.nav .sp{display:none}
+  .nav a{flex-direction:column;gap:0;font-size:.7rem;padding:6px 10px;min-width:62px;text-align:center;flex:none}
+  .nav a .e{font-size:1.25rem}
+  main{padding-bottom:110px}
+  .hero .sticker{font-size:2.4rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+
+<body>
+<div class="shell">
+  <nav class="nav" id="nav" aria-label="Main"></nav>
+  <main id="app"></main>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+/* ==========================================================
+   🌸 EDIT-ME ZONE  (your data lives here at the start)
+   - Change names, emojis, colors, dates, lecture counts below.
+   - This only loads the FIRST time you open the site.
+     After that, everything is saved in your browser.
+     To load new defaults: Settings -> "Reset everything".
+   ========================================================== */
+const DEFAULT_SETTINGS = {
+  name: 'Jiya',
+  examDate: '2027-02-06',   // ⚠️ placeholder, put the real GATE 2027 date in Settings
+  dailyGoalHrs: 4
+};
+
+// Your PW FastTrack GATE 2027 DA (evening slot) schedule.
+// chapters: done = lectures you finished, total = lectures in that chapter
+const DEFAULT_SUBJECTS = [
+  { name:'Engineering Mathematics', emoji:'📐', color:'#FF8FB1', start:'2026-09-21', end:'2026-10-16',
+    chapters:[ {name:'Linear Algebra',done:4,total:4}, {name:'Calculus',done:4,total:4}, {name:'Probability and Statistics',done:2,total:4} ] },
+  { name:'Machine Learning', emoji:'🤖', color:'#B9A4FF', start:'2026-09-28', end:'2026-10-10',
+    chapters:[ {name:'Machine Learning',done:4,total:7} ] },
+  { name:'General Aptitude', emoji:'🧩', color:'#FFC49B', start:'2026-10-14', end:'2026-10-23', chapters:[] },
+  { name:'DBMS', emoji:'🗄️', color:'#9AD7FF', start:'2026-10-26', end:'2026-11-06', chapters:[] },
+  { name:'Python for Data Science', emoji:'🐍', color:'#8FE3C8', start:'2026-11-12', end:'2026-11-23', chapters:[] },
+  { name:'Data Structures for Python', emoji:'🌳', color:'#FFE08A', start:'2026-11-24', end:'2026-12-08', chapters:[] },
+  { name:'Algorithms', emoji:'⚙️', color:'#F7A8E0', start:'2026-12-01', end:'2026-12-10', chapters:[] },
+  { name:'Data Warehousing', emoji:'🏢', color:'#A8E6CF', start:'2026-12-09', end:'2026-12-11', chapters:[] },
+  { name:'Artificial Intelligence', emoji:'🧠', color:'#C9B8FF', start:'2026-12-11', end:'2026-12-20', chapters:[] }
+];
+
+// Cheering messages on the home page (add your own!)
+const QUOTES = [
+  'Small steps every day add up to one big rank. 🌱',
+  'One lecture at a time. You are doing great. 💖',
+  'Backlogs are just future wins waiting. ✨',
+  'Rest is part of the plan too. 🍵',
+  'Future you is already proud. 🎀',
+  'Consistency beats intensity. 🌸'
+];
+
+// Sample formulas so the page does not look empty. Delete them anytime.
+const SAMPLE_FORMULAS = [
+  { subj:'Engineering Mathematics', title:"Bayes' theorem", text:'P(A|B) = P(B|A) · P(A) / P(B)' },
+  { subj:'Engineering Mathematics', title:'Variance', text:'Var(X) = E[X²] − (E[X])²' },
+  { subj:'Engineering Mathematics', title:'Eigenvalues', text:'det(A − λI) = 0\nsum of eigenvalues = trace(A)\nproduct of eigenvalues = det(A)' },
+  { subj:'Engineering Mathematics', title:'Rank–nullity', text:'rank(A) + nullity(A) = n   (n = number of columns)' },
+  { subj:'Machine Learning', title:'Gradient descent update', text:'w ← w − α · ∇J(w)' }
+];
+
+/* ==========================================================
+   ⚙️ APP CODE  (you can explore this later, no need to touch it now)
+   ========================================================== */
+const KEY = 'jiya-gate-da-tracker-v1';
+const TKEY = 'jiya-gate-da-timer-v1';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2, '0');
+const dkey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => dkey(new Date());
+const parse = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d); };
+const daysBetween = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
+const addDays = (k, n) => { const d = parse(k); d.setDate(d.getDate() + n); return dkey(d); };
+const fmtDate = k => k ? parse(k).toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short'}) : '';
+const fmtLong = k => parse(k).toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'});
+const hrs = m => (m / 60).toFixed(1).replace(/\.0$/, '');
+const hm = m => m >= 60 ? `${Math.floor(m/60)}h ${m%60 ? (m%60)+'m' : ''}`.trim() : `${m}m`;
+
+/* ---------- state ---------- */
+let S;
+function freshState(){
+  const subjects = DEFAULT_SUBJECTS.map(s => ({ id: uid(), pyq: 0, fav: false, ...structuredClone(s) }));
+  const byName = n => subjects.find(s => s.name === n);
+  const backlogs = [];
+  subjects.forEach(s => {
+    s.chapters.forEach(c => { c.id = uid(); });
+    const left = s.chapters.reduce((a, c) => a + (c.total - c.done), 0);
+    if (left > 0 && s.start <= today()) {
+      backlogs.push({ id: uid(), sid: s.id, topic: `Pending lectures in ${s.name}`, lectures: left, priority: 'high', due: s.end, done: false });
+    }
+  });
+  return {
+    settings: { ...DEFAULT_SETTINGS, theme: 'auto' },
+    subjects, backlogs, sessions: [], weak: [], notes: [],
+    formulas: SAMPLE_FORMULAS.map(f => ({ id: uid(), sid: byName(f.subj)?.id || '', title: f.title, text: f.text, imgKey: '' }))
+  };
+}
+function load(){
+  try { const raw = localStorage.getItem(KEY); if (raw) { S = JSON.parse(raw); return; } } catch {}
+  S = freshState(); save();
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { toast('Could not save. Is browser storage blocked?'); } }
+const subj = id => S.subjects.find(s => s.id === id);
+
+/* ---------- file storage (notes + formula images) in IndexedDB ---------- */
+const idb = new Promise((res, rej) => {
+  const r = indexedDB.open('jiya-gate-files', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('files');
+  r.onsuccess = () => res(r.result);
+  r.onerror = () => rej(r.error);
+});
+const fileTx = async (mode, fn) => { const db = await idb; return new Promise((res, rej) => { const t = db.transaction('files', mode); const req = fn(t.objectStore('files')); t.oncomplete = () => res(req?.result); t.onerror = () => rej(t.error); }); };
+const fileSave = (k, blob) => fileTx('readwrite', s => s.put(blob, k));
+const fileGet = k => fileTx('readonly', s => s.get(k));
+const fileDel = k => fileTx('readwrite', s => s.delete(k));
+const blobToDataURL = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+
+/* ---------- study time helpers ---------- */
+const minutesOn = d => S.sessions.filter(x => x.date === d).reduce((a, x) => a + x.minutes, 0);
+function streak(){
+  let d = today(), n = 0;
+  if (!minutesOn(d)) d = addDays(d, -1);
+  while (minutesOn(d) > 0) { n++; d = addDays(d, -1); }
+  return n;
+}
+const weekDays = () => Array.from({length: 7}, (_, i) => addDays(today(), i - 6));
+const weekMinutes = () => weekDays().reduce((a, d) => a + minutesOn(d), 0);
+
+/* ---------- subject helpers ---------- */
+const lecTotals = s => s.chapters.reduce((a, c) => ({ done: a.done + c.done, total: a.total + c.total }), { done: 0, total: 0 });
+const pctOf = (a, b) => b ? Math.round(a / b * 100) : 0;
+function status(s){
+  const t = today();
+  if (t < s.start) return { k:'soon', label:`Starts in ${daysBetween(t, s.start)}d` };
+  if (t > s.end) return { k:'ended', label:'Class ended' };
+  const left = daysBetween(t, s.end);
+  return { k:'live', label: left === 0 ? 'Live · last day' : `Live · ${left}d left` };
+}
+const chip = (s, extra = '') => `<span class="chip" style="--c:${esc(s.color)}">${esc(s.emoji)} ${esc(s.name)}${extra}</span>`;
+
+/* ---------- tiny UI helpers ---------- */
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+const ui = { view:'home', blFilter:'open', noteSubj:'', fmSubj:'' };
+
+function fieldHtml(f){
+  const id = 'f_' + f.name, v = f.value ?? '';
+  let input;
+  if (f.type === 'select') input = `<select id="${id}" name="${f.name}">${f.options.map(o => `<option value="${esc(o.v)}" ${String(o.v) === String(v) ? 'selected' : ''}>${esc(o.l)}</option>`).join('')}</select>`;
+  else if (f.type === 'textarea') input = `<textarea id="${id}" name="${f.name}" placeholder="${esc(f.ph || '')}">${esc(v)}</textarea>`;
+  else if (f.type === 'file') input = `<input id="${id}" name="${f.name}" type="file" accept="${esc(f.accept || '')}">`;
+  else input = `<input id="${id}" name="${f.name}" type="${f.type || 'text'}" value="${esc(v)}" placeholder="${esc(f.ph || '')}" ${f.min !== undefined ? `min="${f.min}"` : ''} ${f.step ? `step="${f.step}"` : ''} ${f.required ? 'required' : ''}>`;
+  return `<div class="field"><label for="${id}">${esc(f.label)}</label>${input}</div>`;
+}
+function openForm({ title, fields, submit = 'Save', onSubmit }){
+  const d = $('#dlg');
+  d.innerHTML = `<form class="form"><h3>${esc(title)}</h3>${fields.map(fieldHtml).join('')}<div class="row end"><button type="button" class="btn ghost" data-act="close">Cancel</button><button class="btn" type="submit">${esc(submit)}</button></div></form>`;
+  d.showModal();
+  const form = $('form', d);
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const v = Object.fromEntries(new FormData(form).entries());
+    fields.filter(f => f.type === 'file').forEach(f => { v[f.name] = form.elements[f.name].files[0] || null; });
+    await onSubmit(v);
+    d.close(); render();
+  };
+}
+function confirmBox(msg, onYes){
+  const d = $('#dlg');
+  d.innerHTML = `<h3>${esc(msg)}</h3><div class="row end" style="margin-top:14px"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="yes">Yes</button></div>`;
+  d.showModal();
+  $('#yes').onclick = async () => { await onYes(); d.close(); render(); };
+}
+const subjectOptions = (blank) => [...(blank ? [{ v:'', l:blank }] : []), ...S.subjects.map(s => ({ v:s.id, l:`${s.emoji} ${s.name}` }))];
+
+/* ==========================================================
+   VIEWS
+   ========================================================== */
+const NAV = [
+  ['home','🏠','Home'], ['classes','📚','Classes'], ['backlog','🎒','Backlogs'], ['time','⏱️','Study time'],
+  ['notes','📝','Notes'], ['formulas','✨','Formulas'], ['practice','🎯','Practice'], ['settings','⚙️','Settings']
+];
+function renderNav(){
+  $('#nav').innerHTML = `<div class="brand"><span style="font-size:1.8rem">🌸</span><span>${esc(S.settings.name)}'s tracker<small>GATE 2027 · DA</small></span></div>` +
+    NAV.map(([k, e, l]) => `<a href="#${k}" class="${ui.view === k ? 'on' : ''}"><span class="e">${e}</span>${l}</a>`).join('') + '<div class="sp"></div>';
+}
+
+/* ---------- Home ---------- */
+function vHome(){
+  const st = S.settings, t = today();
+  const goal = st.dailyGoalHrs * 60, mins = minutesOn(t), pct = Math.min(100, Math.round(mins / goal * 100));
+  const C = 2 * Math.PI * 52;
+  const left = daysBetween(t, st.examDate);
+  const quote = QUOTES[Math.floor(parse(t) / 864e5) % QUOTES.length];
+
+  const alerts = [];
+  S.subjects.forEach(s => {
+    const lt = lecTotals(s), pend = lt.total - lt.done, stt = status(s);
+    if (pend > 0 && stt.k === 'ended') alerts.push(`${s.emoji} <b>${esc(s.name)}</b> class has ended with <b>${pend}</b> lecture${pend > 1 ? 's' : ''} pending.`);
+    else if (pend > 0 && stt.k === 'live' && daysBetween(t, s.end) <= 2) alerts.push(`${s.emoji} <b>${esc(s.name)}</b> ends ${daysBetween(t, s.end) === 0 ? 'today' : 'in ' + daysBetween(t, s.end) + ' day(s)'} and <b>${pend}</b> lecture${pend > 1 ? 's are' : ' is'} pending.`);
+  });
+  S.backlogs.filter(b => !b.done && b.due && b.due < t).forEach(b => alerts.push(`🎒 Overdue backlog: <b>${esc(b.topic)}</b> (was due ${fmtDate(b.due)}).`));
+
+  const upcoming = S.subjects.filter(s => status(s).k !== 'ended').sort((a, b) => (status(a).k === 'live' ? -1 : 0) - (status(b).k === 'live' ? -1 : 0) || a.start.localeCompare(b.start)).slice(0, 4);
+  const withLec = S.subjects.filter(s => s.chapters.length);
+  const openBl = S.backlogs.filter(b => !b.done).sort((a, b) => (a.due || '9').localeCompare(b.due || '9')).slice(0, 4);
+  const pend = S.backlogs.filter(b => !b.done).reduce((a, b) => a + (+b.lectures || 0), 0);
+
+  return `
+  <div class="card hero" style="margin-bottom:18px">
+    <span class="sticker">🎀</span>
+    <h1>Hi ${esc(st.name)} 🌸</h1>
+    <p style="margin:6px 0 14px;max-width:34ch">${esc(quote)}</p>
+    <div class="row">
+      <span class="chip" style="--c:#fff">🗓️ ${left >= 0 ? `<b class="num">${left}</b> days to GATE` : 'GATE day has passed'}</span>
+      <span class="chip" style="--c:#fff">${fmtLong(st.examDate)}</span>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h2>Today</h2>
+      <div class="row" style="gap:18px;flex-wrap:nowrap">
+        <div class="ring">
+          <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="14"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--pink)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pct / 100)}"/></svg>
+          <div class="mid"><div><b class="num" style="font-size:1.5rem">${hm(mins)}</b><br><span class="muted tiny">of ${st.dailyGoalHrs}h goal</span></div></div>
+        </div>
+        <div class="stack">
+          <div class="pill-stat"><b class="num">${streak()} 🔥</b><span class="muted tiny">day streak</span></div>
+          <div class="pill-stat"><b class="num">${hrs(weekMinutes())}h</b><span class="muted tiny">last 7 days</span></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px"><a class="btn mint" href="#time" style="text-decoration:none">Start studying ⏱️</a></div>
+    </div>
+
+    <div class="card">
+      <h2>Heads up</h2>
+      ${alerts.length ? `<div class="stack">${alerts.map(a => `<div class="alert"><span>💌</span><span>${a}</span></div>`).join('')}</div>` :
+        `<div class="empty"><span class="big">🎉</span>Nothing is overdue. Lovely.</div>`}
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card">
+      <div class="row between"><h2>Classes coming up</h2><a class="muted tiny" href="#classes">see all</a></div>
+      ${upcoming.length ? upcoming.map(s => `<div class="item"><span style="font-size:1.5rem">${esc(s.emoji)}</span><div class="grow"><div class="t">${esc(s.name)}</div><div class="muted tiny">${fmtDate(s.start)} → ${fmtDate(s.end)}</div></div><span class="chip ${status(s).k}">${status(s).label}</span></div>`).join('') : '<div class="empty">All classes done 🎓</div>'}
+    </div>
+
+    <div class="card">
+      <div class="row between"><h2>Lecture progress</h2><a class="muted tiny" href="#classes">update</a></div>
+      ${withLec.length ? withLec.map(s => { const l = lecTotals(s), p = pctOf(l.done, l.total); return `<div style="margin-bottom:12px"><div class="row between tiny"><span>${esc(s.emoji)} ${esc(s.name)}</span><b class="num">${l.done}/${l.total} · ${p}%</b></div><div class="bar" style="--c:${esc(s.color)}"><i style="width:${p}%"></i></div></div>`; }).join('') : '<div class="empty">Add chapters in Classes to see progress.</div>'}
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="row between"><h2>Backlog peek 🎒</h2><span class="muted tiny num">${pend} lecture${pend === 1 ? '' : 's'} pending</span></div>
+    ${openBl.length ? openBl.map(blRow).join('') : '<div class="empty"><span class="big">🌈</span>No backlogs. Keep it that way.</div>'}
+  </div>`;
+}
+
+/* ---------- Classes ---------- */
+function vClasses(){
+  return `<div class="page-head"><h1>Classes 📚</h1><button class="btn" data-act="subj-add">+ Subject</button></div>
+  <p class="muted" style="margin-top:-8px">Tap + when you finish a lecture. Dates come from your PW FastTrack schedule.</p>
+  <div class="grid g2">${S.subjects.map(s => {
+    const l = lecTotals(s), p = pctOf(l.done, l.total), st = status(s), pend = l.total - l.done;
+    return `<div class="card">
+      <div class="row between" style="align-items:flex-start;flex-wrap:nowrap">
+        <div style="min-width:0"><h3>${esc(s.emoji)} ${esc(s.name)}</h3><div class="muted tiny">${fmtDate(s.start)} → ${fmtDate(s.end)}</div></div>
+        <span class="chip ${st.k}">${st.label}</span>
+      </div>
+      <div class="row between tiny" style="margin:12px 0 4px"><span>Lectures</span><b class="num">${l.total ? `${l.done}/${l.total} · ${p}%` : 'no chapters yet'}</b></div>
+      <div class="bar" style="--c:${esc(s.color)}"><i style="width:${p}%"></i></div>
+      <div style="margin-top:10px">${s.chapters.map(c => `<div class="item"><div class="grow"><div class="t">${esc(c.name)}</div></div>
+        <div class="counter"><button class="icon-btn" data-act="lec-" data-s="${s.id}" data-c="${c.id}" aria-label="One less lecture done">−</button><b class="num">${c.done}/${c.total}</b><button class="icon-btn" data-act="lec+" data-s="${s.id}" data-c="${c.id}" aria-label="One more lecture done">+</button></div>
+        <button class="icon-btn" data-act="chap-edit" data-s="${s.id}" data-c="${c.id}" aria-label="Edit chapter" title="Edit">✏️</button></div>`).join('')}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn sm ghost" data-act="chap-add" data-s="${s.id}">+ Chapter</button>
+        <button class="btn sm ghost" data-act="subj-edit" data-s="${s.id}">Edit subject</button>
+        ${pend > 0 ? `<button class="btn sm lav" data-act="to-backlog" data-s="${s.id}">Send ${pend} pending to backlog</button>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ---------- Backlogs ---------- */
+const PRI = { high:['🔴','High'], med:['🟡','Medium'], low:['🟢','Low'] };
+function blRow(b){
+  const s = subj(b.sid), t = today(), over = !b.done && b.due && b.due < t;
+  return `<div class="item ${b.done ? 'done' : ''}">
+    <button class="check ${b.done ? 'on' : ''}" data-act="bl-toggle" data-id="${b.id}" aria-label="${b.done ? 'Mark not done' : 'Mark done'}">${b.done ? '✓' : ''}</button>
+    <div class="grow"><div class="t">${esc(b.topic)}</div>
+      <div class="row" style="gap:6px;margin-top:3px">${s ? chip(s) : ''}${b.lectures ? `<span class="chip" style="--c:var(--sky)">${b.lectures} lecture${b.lectures > 1 ? 's' : ''}</span>` : ''}
+      ${b.due ? `<span class="chip ${over ? 'warn' : ''}">${over ? 'Overdue · ' : 'Due '}${fmtDate(b.due)}</span>` : ''}<span class="tiny" title="${PRI[b.priority][1]} priority">${PRI[b.priority][0]}</span></div></div>
+    <button class="icon-btn del" data-act="bl-del" data-id="${b.id}" aria-label="Delete backlog">✕</button></div>`;
+}
+function vBacklog(){
+  const f = ui.blFilter;
+  const order = { high:0, med:1, low:2 };
+  const list = S.backlogs.filter(b => f === 'all' || (f === 'open' ? !b.done : b.done)).sort((a, b) => a.done - b.done || order[a.priority] - order[b.priority] || (a.due || '9').localeCompare(b.due || '9'));
+  const open = S.backlogs.filter(b => !b.done), lec = open.reduce((a, b) => a + (+b.lectures || 0), 0);
+  return `<div class="page-head"><h1>Backlogs 🎒</h1><button class="btn" data-act="bl-add">+ Add backlog</button></div>
+  <div class="grid g3" style="margin-bottom:18px">
+    <div class="card pill-stat"><b class="num">${open.length}</b><span class="muted">open items</span></div>
+    <div class="card pill-stat"><b class="num">${lec}</b><span class="muted">lectures to catch up</span></div>
+    <div class="card pill-stat"><b class="num">${S.backlogs.filter(b => b.done).length} ✅</b><span class="muted">cleared</span></div>
+  </div>
+  <div class="tabs" style="margin-bottom:12px">${[['open','Open'],['done','Cleared'],['all','All']].map(([k, l]) => `<button class="${f === k ? 'on' : ''}" data-act="bl-filter" data-k="${k}">${l}</button>`).join('')}</div>
+  <div class="card">${list.length ? list.map(blRow).join('') : `<div class="empty"><span class="big">🌈</span>${f === 'done' ? 'Nothing cleared yet.' : 'No backlogs here. Nice!'}</div>`}</div>`;
+}
+
+/* ---------- Study time ---------- */
+function getTimer(){ try { return JSON.parse(localStorage.getItem(TKEY)) || { running:false, acc:0, since:0, sid:'' }; } catch { return { running:false, acc:0, since:0, sid:'' }; } }
+const setTimer = t => { try { localStorage.setItem(TKEY, JSON.stringify(t)); } catch {} };
+const elapsed = t => t.acc + (t.running ? Date.now() - t.since : 0);
+const clockText = ms => { const s = Math.floor(ms / 1000); return `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s % 3600 / 60))}:${pad(s % 60)}`; };
+
+function vTime(){
+  const tm = getTimer(), days = weekDays(), mx = Math.max(60, ...days.map(minutesOn));
+  const heat = Array.from({length: 28}, (_, i) => addDays(today(), i - 27));
+  const perSubj = S.subjects.map(s => ({ s, m: S.sessions.filter(x => x.sid === s.id).reduce((a, x) => a + x.minutes, 0) })).filter(x => x.m > 0).sort((a, b) => b.m - a.m);
+  const totalMin = S.sessions.reduce((a, x) => a + x.minutes, 0);
+  const recent = [...S.sessions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 8);
+  return `<div class="page-head"><h1>Study time ⏱️</h1><button class="btn ghost" data-act="time-add">+ Add time by hand</button></div>
+  <div class="grid g2">
+    <div class="card">
+      <h2>Timer</h2>
+      <div class="clock num" id="clock">${clockText(elapsed(tm))}</div>
+      <div class="field" style="margin-top:12px"><label for="timerSubj">Studying</label>
+        <select id="timerSubj" data-change="timer-subj">${subjectOptions('Anything').map(o => `<option value="${esc(o.v)}" ${o.v === tm.sid ? 'selected' : ''}>${esc(o.l)}</option>`).join('')}</select></div>
+      <div class="row" style="justify-content:center">
+        <button class="btn mint" data-act="timer-toggle">${tm.running ? '⏸ Pause' : (elapsed(tm) ? '▶ Resume' : '▶ Start')}</button>
+        <button class="btn" data-act="timer-save">Save session</button>
+        <button class="btn ghost" data-act="timer-reset">Reset</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Last 7 days</h2>
+      <div class="week">${days.map(d => { const m = minutesOn(d); return `<div class="col"><small class="num">${m ? hrs(m) + 'h' : ''}</small><div class="b ${d === today() ? 'today' : ''}" style="height:${Math.max(3, m / mx * 100)}%"></div><small>${parse(d).toLocaleDateString('en-IN', {weekday:'short'})}</small></div>`; }).join('')}</div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h2>Last 4 weeks</h2>
+      <div class="heat">${heat.map(d => { const m = minutesOn(d), g = S.settings.dailyGoalHrs * 60; const l = m === 0 ? '' : m < g * .4 ? 'l1' : m < g ? 'l2' : 'l3'; return `<i class="${l} ${d === today() ? 't' : ''}" title="${fmtDate(d)} · ${hm(m)}"></i>`; }).join('')}</div>
+      <p class="muted tiny" style="margin-bottom:0">Darker pink means closer to your daily goal. Streak: <b>${streak()} 🔥</b></p></div>
+    <div class="card"><h2>Hours by subject</h2>
+      ${perSubj.length ? perSubj.map(({ s, m }) => `<div style="margin-bottom:10px"><div class="row between tiny"><span>${esc(s.emoji)} ${esc(s.name)}</span><b class="num">${hm(m)}</b></div><div class="bar" style="--c:${esc(s.color)}"><i style="width:${pctOf(m, perSubj[0].m)}%"></i></div></div>`).join('') + `<div class="muted tiny">All time: <b>${hm(totalMin)}</b></div>` : '<div class="empty"><span class="big">🌱</span>Save a session with a subject to see this.</div>'}</div>
+  </div>
+  <div class="card" style="margin-top:18px"><h2>Recent sessions</h2>
+    ${recent.length ? recent.map(x => { const s = subj(x.sid); return `<div class="item"><div class="grow"><div class="t">${s ? esc(s.emoji + ' ' + s.name) : '📖 General study'}${x.note ? ' · ' + esc(x.note) : ''}</div><div class="muted tiny">${fmtDate(x.date)}</div></div><b class="num">${hm(x.minutes)}</b><button class="icon-btn del" data-act="ses-del" data-id="${x.id}" aria-label="Delete session">✕</button></div>`; }).join('') : '<div class="empty">No sessions yet. Start the timer above.</div>'}</div>`;
+}
+
+/* ---------- Notes ---------- */
+function vNotes(){
+  const list = S.notes.filter(n => !ui.noteSubj || n.sid === ui.noteSubj).sort((a, b) => b.created - a.created);
+  return `<div class="page-head"><h1>Notes 📝</h1><button class="btn" data-act="note-add">+ Add note</button></div>
+  <div class="row" style="margin-bottom:16px"><div style="flex:1;min-width:180px"><input type="search" id="q" placeholder="Search notes…" aria-label="Search notes"></div>
+    <div style="min-width:180px"><select data-change="note-subj" aria-label="Filter by subject">${subjectOptions('All subjects').map(o => `<option value="${esc(o.v)}" ${o.v === ui.noteSubj ? 'selected' : ''}>${esc(o.l)}</option>`).join('')}</select></div></div>
+  ${list.length ? `<div class="grid g3">${list.map(n => { const s = subj(n.sid), isImg = (n.fileType || '').startsWith('image/');
+    return `<div class="card" data-search="${esc((n.title + ' ' + (n.text || '') + ' ' + (s?.name || '')).toLowerCase())}">
+      <div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3 style="margin:0">${esc(n.title)}</h3><button class="icon-btn del" data-act="note-del" data-id="${n.id}" aria-label="Delete note">✕</button></div>
+      <div style="margin:6px 0 10px">${s ? chip(s) : ''}</div>
+      ${isImg ? `<img class="thumb" data-file="${n.fileKey}" data-act="zoom" alt="${esc(n.title)}">` : ''}
+      ${n.fileKey && !isImg ? `<a class="btn sm ghost" data-file="${n.fileKey}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">📄 Open ${esc(n.fileName || 'file')}</a>` : ''}
+      ${n.text ? `<p class="note-text" style="margin:10px 0 0">${esc(n.text)}</p>` : ''}
+      <div class="muted tiny" style="margin-top:10px">${new Date(n.created).toLocaleDateString('en-IN', {day:'numeric', month:'short'})}</div></div>`; }).join('')}</div>`
+  : '<div class="card empty"><span class="big">📓</span>No notes yet. Add a photo of your handwritten notes or a PDF.</div>'}`;
+}
+
+/* ---------- Formulas ---------- */
+function vFormulas(){
+  const list = S.formulas.filter(f => !ui.fmSubj || f.sid === ui.fmSubj);
+  return `<div class="page-head"><h1>Formula book ✨</h1><button class="btn" data-act="fm-add">+ Add formula</button></div>
+  <div class="row" style="margin-bottom:16px"><div style="flex:1;min-width:180px"><input type="search" id="q" placeholder="Search formulas…" aria-label="Search formulas"></div>
+    <div style="min-width:180px"><select data-change="fm-subj" aria-label="Filter by subject">${subjectOptions('All subjects').map(o => `<option value="${esc(o.v)}" ${o.v === ui.fmSubj ? 'selected' : ''}>${esc(o.l)}</option>`).join('')}</select></div></div>
+  ${list.length ? `<div class="grid g2">${list.map(f => { const s = subj(f.sid);
+    return `<div class="card" data-search="${esc((f.title + ' ' + f.text + ' ' + (s?.name || '')).toLowerCase())}">
+      <div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3 style="margin:0">${esc(f.title)}</h3><button class="icon-btn del" data-act="fm-del" data-id="${f.id}" aria-label="Delete formula">✕</button></div>
+      <div style="margin:6px 0 10px">${s ? chip(s) : ''}</div>
+      ${f.text ? `<div class="formula">${esc(f.text)}</div>` : ''}
+      ${f.imgKey ? `<img class="thumb" style="margin-top:10px" data-file="${f.imgKey}" data-act="zoom" alt="${esc(f.title)}">` : ''}</div>`; }).join('')}</div>`
+  : '<div class="card empty"><span class="big">🔮</span>No formulas yet. Type one or upload a picture.</div>'}`;
+}
+
+/* ---------- Practice ---------- */
+function vPractice(){
+  const total = S.subjects.reduce((a, s) => a + (s.pyq || 0), 0);
+  const fav = S.subjects.find(s => s.fav);
+  const open = S.weak.filter(w => !w.fixed), fixed = S.weak.filter(w => w.fixed);
+  return `<div class="page-head"><h1>Practice 🎯</h1></div>
+  <div class="grid g2">
+    <div class="card"><h2>PYQs solved <span class="muted num">· ${total} total</span></h2>
+      <p class="muted tiny" style="margin-top:-6px">Tap ⭐ to mark your favourite subject${fav ? ` (now ${esc(fav.emoji)} ${esc(fav.name)})` : ''}.</p>
+      ${S.subjects.map(s => `<div class="item"><button class="icon-btn" data-act="fav" data-s="${s.id}" aria-label="Favourite subject" style="${s.fav ? 'background:var(--butter)' : ''}">${s.fav ? '⭐' : '☆'}</button>
+        <div class="grow"><div class="t">${esc(s.emoji)} ${esc(s.name)}</div></div>
+        <div class="counter"><button class="icon-btn" data-act="pyq-" data-s="${s.id}" aria-label="One less">−</button><b class="num">${s.pyq || 0}</b><button class="icon-btn" data-act="pyq+" data-s="${s.id}" aria-label="One more">+</button></div></div>`).join('')}
+    </div>
+    <div class="card"><div class="row between"><h2>Weak topics 🌧️</h2><button class="btn sm" data-act="weak-add">+ Add</button></div>
+      ${open.length ? open.map(weakRow).join('') : '<div class="empty"><span class="big">☀️</span>No weak topics listed. Add the ones that trip you up.</div>'}
+      ${fixed.length ? `<h3 style="margin-top:14px">Fixed 💪</h3>${fixed.map(weakRow).join('')}` : ''}
+    </div>
+  </div>`;
+}
+function weakRow(w){
+  const s = subj(w.sid);
+  return `<div class="item ${w.fixed ? 'done' : ''}"><button class="check ${w.fixed ? 'on' : ''}" data-act="weak-toggle" data-id="${w.id}" aria-label="Toggle fixed">${w.fixed ? '✓' : ''}</button>
+    <div class="grow"><div class="t">${esc(w.topic)}</div>${s ? `<div style="margin-top:3px">${chip(s)}</div>` : ''}</div>
+    <button class="icon-btn del" data-act="weak-del" data-id="${w.id}" aria-label="Delete">✕</button></div>`;
+}
+
+/* ---------- Settings ---------- */
+function vSettings(){
+  const st = S.settings;
+  return `<div class="page-head"><h1>Settings ⚙️</h1></div>
+  <div class="grid g2">
+    <div class="card"><h2>About you</h2>
+      <p class="muted">Name: <b style="color:var(--ink)">${esc(st.name)}</b><br>GATE date: <b style="color:var(--ink)">${fmtLong(st.examDate)}</b><br>Daily goal: <b style="color:var(--ink)">${st.dailyGoalHrs} hours</b></p>
+      <div class="row"><button class="btn" data-act="set-edit">Edit</button>
+      <select data-change="theme" aria-label="Theme" style="width:auto"><option value="auto" ${st.theme === 'auto' ? 'selected' : ''}>🌗 Auto theme</option><option value="light" ${st.theme === 'light' ? 'selected' : ''}>☀️ Light</option><option value="dark" ${st.theme === 'dark' ? 'selected' : ''}>🌙 Dark</option></select></div></div>
+    <div class="card"><h2>Backup 💾</h2>
+      <p class="muted">Everything is saved inside this browser only. Download a backup now and then, especially before clearing browser data.</p>
+      <div class="row"><button class="btn mint" data-act="export">Download backup</button>
+      <label class="btn lav" style="cursor:pointer">Restore backup<input type="file" id="importFile" accept="application/json" hidden></label></div>
+      <hr style="border:0;border-top:2px dotted var(--muted);margin:16px 0">
+      <button class="btn ghost" data-act="reset" style="color:var(--danger)">Reset everything</button></div>
+  </div>`;
+}
+
+/* ==========================================================
+   RENDER + EVENTS
+   ========================================================== */
+const VIEWS = { home:vHome, classes:vClasses, backlog:vBacklog, time:vTime, notes:vNotes, formulas:vFormulas, practice:vPractice, settings:vSettings };
+function applyTheme(){
+  const t = S.settings.theme;
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
+}
+function render(){
+  const q = $('#q')?.value;
+  applyTheme(); renderNav();
+  $('#app').innerHTML = (VIEWS[ui.view] || vHome)();
+  hydrateFiles();
+  const qi = $('#q'); if (qi) { qi.addEventListener('input', filterCards); }
+}
+function filterCards(){
+  const v = $('#q').value.trim().toLowerCase();
+  $$('[data-search]').forEach(c => { c.hidden = v && !c.dataset.search.includes(v); });
+}
+async function hydrateFiles(){
+  for (const el of $$('[data-file]')) {
+    try {
+      const b = await fileGet(el.dataset.file); if (!b) continue;
+      const url = URL.createObjectURL(b);
+      if (el.tagName === 'IMG') el.src = url; else el.href = url;
+    } catch {}
+  }
+}
+function route(){
+  const h = location.hash.slice(1);
+  ui.view = VIEWS[h] ? h : 'home';
+  render(); window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+
+document.addEventListener('change', e => {
+  const k = e.target.dataset?.change;
+  if (k === 'timer-subj') { const t = getTimer(); t.sid = e.target.value; setTimer(t); }
+  if (k === 'note-subj') { ui.noteSubj = e.target.value; render(); }
+  if (k === 'fm-subj') { ui.fmSubj = e.target.value; render(); }
+  if (k === 'theme') { S.settings.theme = e.target.value; save(); render(); }
+  if (e.target.id === 'importFile' && e.target.files[0]) importBackup(e.target.files[0]);
+});
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act, id = b.dataset.id, sid = b.dataset.s, cid = b.dataset.c;
+  const s = sid ? subj(sid) : null, ch = s && cid ? s.chapters.find(c => c.id === cid) : null;
+  const commit = () => { save(); render(); };
+
+  switch (a) {
+    case 'close': $('#dlg').close(); break;
+    case 'zoom': { const d = $('#dlg'); d.innerHTML = `<img class="big" src="${b.src}" alt=""><div class="row end" style="margin-top:12px"><button class="btn" data-act="close">Close</button></div>`; d.showModal(); break; }
+
+    /* classes */
+    case 'lec+': if (ch && ch.done < ch.total) { ch.done++; commit(); if (ch.done === ch.total) toast('Chapter complete! 🎉'); } break;
+    case 'lec-': if (ch && ch.done > 0) { ch.done--; commit(); } break;
+    case 'chap-add': openForm({ title:`Add chapter to ${s.name}`, fields:[{name:'name', label:'Chapter name', required:true}, {name:'total', label:'Total lectures', type:'number', value:4, min:1}, {name:'done', label:'Already finished', type:'number', value:0, min:0}],
+      onSubmit: v => { const total = Math.max(1, +v.total || 1); s.chapters.push({ id:uid(), name:v.name.trim() || 'Chapter', total, done:Math.min(total, Math.max(0, +v.done || 0)) }); save(); } }); break;
+    case 'chap-edit': openForm({ title:'Edit chapter', fields:[{name:'name', label:'Chapter name', value:ch.name, required:true}, {name:'total', label:'Total lectures', type:'number', value:ch.total, min:1}, {name:'done', label:'Finished', type:'number', value:ch.done, min:0}, {name:'del', label:'Type DELETE here to remove this chapter', ph:'leave empty to keep'}],
+      onSubmit: v => { if (v.del.trim().toUpperCase() === 'DELETE') s.chapters = s.chapters.filter(c => c !== ch); else { ch.name = v.name.trim() || ch.name; ch.total = Math.max(1, +v.total || 1); ch.done = Math.min(ch.total, Math.max(0, +v.done || 0)); } save(); } }); break;
+    case 'subj-add': openForm({ title:'New subject', fields:[{name:'name', label:'Name', required:true}, {name:'emoji', label:'Emoji', value:'📘'}, {name:'color', label:'Color', type:'color', value:'#FF8FB1'}, {name:'start', label:'Class starts', type:'date', value:today()}, {name:'end', label:'Class ends', type:'date', value:addDays(today(), 10)}],
+      onSubmit: v => { S.subjects.push({ id:uid(), name:v.name.trim(), emoji:v.emoji || '📘', color:v.color, start:v.start, end:v.end, chapters:[], pyq:0, fav:false }); save(); } }); break;
+    case 'subj-edit': openForm({ title:`Edit ${s.name}`, fields:[{name:'name', label:'Name', value:s.name, required:true}, {name:'emoji', label:'Emoji', value:s.emoji}, {name:'color', label:'Color', type:'color', value:s.color}, {name:'start', label:'Class starts', type:'date', value:s.start}, {name:'end', label:'Class ends', type:'date', value:s.end}],
+      onSubmit: v => { Object.assign(s, { name:v.name.trim() || s.name, emoji:v.emoji || s.emoji, color:v.color, start:v.start || s.start, end:v.end || s.end }); save(); } }); break;
+    case 'to-backlog': { const l = lecTotals(s), n = l.total - l.done;
+      S.backlogs.push({ id:uid(), sid:s.id, topic:`Pending lectures in ${s.name}`, lectures:n, priority:'high', due:addDays(today(), 7), done:false }); commit(); toast('Added to backlogs 🎒'); break; }
+
+    /* backlogs */
+    case 'bl-filter': ui.blFilter = b.dataset.k; render(); break;
+    case 'bl-toggle': { const x = S.backlogs.find(y => y.id === id); x.done = !x.done; commit(); if (x.done) toast('Backlog cleared! 🎉'); break; }
+    case 'bl-del': S.backlogs = S.backlogs.filter(y => y.id !== id); commit(); break;
+    case 'bl-add': openForm({ title:'New backlog', fields:[{name:'topic', label:'What is pending?', required:true, ph:'e.g. Eigenvalues, 3 lectures'}, {name:'sid', label:'Subject', type:'select', options:subjectOptions('None')}, {name:'lectures', label:'Lectures pending', type:'number', value:1, min:0}, {name:'priority', label:'Priority', type:'select', value:'med', options:[{v:'high', l:'🔴 High'}, {v:'med', l:'🟡 Medium'}, {v:'low', l:'🟢 Low'}]}, {name:'due', label:'Finish by', type:'date', value:addDays(today(), 3)}],
+      onSubmit: v => { S.backlogs.push({ id:uid(), sid:v.sid, topic:v.topic.trim(), lectures:+v.lectures || 0, priority:v.priority, due:v.due, done:false }); save(); } }); break;
+
+    /* time */
+    case 'timer-toggle': { const t = getTimer(); if (t.running) { t.acc += Date.now() - t.since; t.running = false; } else { t.since = Date.now(); t.running = true; } setTimer(t); render(); break; }
+    case 'timer-reset': setTimer({ running:false, acc:0, since:0, sid:getTimer().sid }); render(); break;
+    case 'timer-save': { const t = getTimer(), m = Math.round(elapsed(t) / 60000);
+      if (m < 1) { toast('Study for at least a minute first 🙂'); break; }
+      S.sessions.push({ id:uid(), date:today(), minutes:m, sid:t.sid, note:'' }); save(); setTimer({ running:false, acc:0, since:0, sid:t.sid }); render(); toast(`Saved ${hm(m)} 🎉`); break; }
+    case 'time-add': openForm({ title:'Add study time', fields:[{name:'minutes', label:'Minutes studied', type:'number', value:60, min:1, required:true}, {name:'sid', label:'Subject', type:'select', options:subjectOptions('Anything')}, {name:'date', label:'Date', type:'date', value:today()}, {name:'note', label:'Note (optional)', ph:'what did you cover?'}],
+      onSubmit: v => { S.sessions.push({ id:uid(), date:v.date || today(), minutes:Math.max(1, +v.minutes || 1), sid:v.sid, note:v.note.trim() }); save(); } }); break;
+    case 'ses-del': S.sessions = S.sessions.filter(x => x.id !== id); commit(); break;
+
+    /* notes */
+    case 'note-add': openForm({ title:'New note', fields:[{name:'title', label:'Title', required:true}, {name:'sid', label:'Subject', type:'select', options:subjectOptions('None')}, {name:'text', label:'Text (optional)', type:'textarea'}, {name:'file', label:'Photo or PDF (optional)', type:'file', accept:'image/*,application/pdf'}],
+      onSubmit: async v => { const n = { id:uid(), title:v.title.trim(), sid:v.sid, text:v.text.trim(), created:Date.now(), fileKey:'', fileName:'', fileType:'' };
+        if (v.file) { n.fileKey = 'n_' + n.id; n.fileName = v.file.name; n.fileType = v.file.type; await fileSave(n.fileKey, v.file); }
+        S.notes.push(n); save(); } }); break;
+    case 'note-del': confirmBox('Delete this note?', async () => { const n = S.notes.find(x => x.id === id); if (n?.fileKey) await fileDel(n.fileKey); S.notes = S.notes.filter(x => x.id !== id); save(); }); break;
+
+    /* formulas */
+    case 'fm-add': openForm({ title:'New formula', fields:[{name:'title', label:'Name', required:true, ph:'e.g. Chain rule'}, {name:'sid', label:'Subject', type:'select', options:subjectOptions('None')}, {name:'text', label:'Formula (type it)', type:'textarea', ph:'dy/dx = (dy/du) · (du/dx)'}, {name:'file', label:'Or upload a picture', type:'file', accept:'image/*'}],
+      onSubmit: async v => { const f = { id:uid(), title:v.title.trim(), sid:v.sid, text:v.text.trim(), imgKey:'' };
+        if (v.file) { f.imgKey = 'f_' + f.id; await fileSave(f.imgKey, v.file); }
+        S.formulas.push(f); save(); } }); break;
+    case 'fm-del': confirmBox('Delete this formula?', async () => { const f = S.formulas.find(x => x.id === id); if (f?.imgKey) await fileDel(f.imgKey); S.formulas = S.formulas.filter(x => x.id !== id); save(); }); break;
+
+    /* practice */
+    case 'pyq+': s.pyq = (s.pyq || 0) + 1; commit(); break;
+    case 'pyq-': s.pyq = Math.max(0, (s.pyq || 0) - 1); commit(); break;
+    case 'fav': { const was = s.fav; S.subjects.forEach(x => x.fav = false); s.fav = !was; commit(); break; }
+    case 'weak-add': openForm({ title:'Add weak topic', fields:[{name:'topic', label:'Topic', required:true, ph:'e.g. Conditional probability'}, {name:'sid', label:'Subject', type:'select', options:subjectOptions('None')}],
+      onSubmit: v => { S.weak.push({ id:uid(), sid:v.sid, topic:v.topic.trim(), fixed:false }); save(); } }); break;
+    case 'weak-toggle': { const w = S.weak.find(x => x.id === id); w.fixed = !w.fixed; commit(); if (w.fixed) toast('Fixed! 💪'); break; }
+    case 'weak-del': S.weak = S.weak.filter(x => x.id !== id); commit(); break;
+
+    /* settings */
+    case 'set-edit': openForm({ title:'Edit settings', fields:[{name:'name', label:'Your name', value:S.settings.name}, {name:'examDate', label:'GATE 2027 exam date', type:'date', value:S.settings.examDate}, {name:'goal', label:'Daily study goal (hours)', type:'number', value:S.settings.dailyGoalHrs, min:1, step:'0.5'}],
+      onSubmit: v => { S.settings.name = v.name.trim() || S.settings.name; S.settings.examDate = v.examDate || S.settings.examDate; S.settings.dailyGoalHrs = Math.max(1, +v.goal || 4); save(); } }); break;
+    case 'export': exportBackup(); break;
+    case 'reset': confirmBox('Delete all your data and start fresh?', async () => { localStorage.removeItem(KEY); localStorage.removeItem(TKEY); const db = await idb; db.transaction('files', 'readwrite').objectStore('files').clear(); S = freshState(); save(); }); break;
+  }
+});
+
+/* ---------- backup ---------- */
+async function exportBackup(){
+  const files = {};
+  for (const k of [...S.notes.map(n => n.fileKey), ...S.formulas.map(f => f.imgKey)].filter(Boolean)) {
+    const b = await fileGet(k); if (b) files[k] = { type:b.type, data:await blobToDataURL(b) };
+  }
+  const blob = new Blob([JSON.stringify({ app:'jiya-gate-tracker', v:1, state:S, files })], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gate-tracker-backup-${today()}.json`; a.click();
+  toast('Backup downloaded 💾');
+}
+async function importBackup(file){
+  try {
+    const j = JSON.parse(await file.text());
+    if (j.app !== 'jiya-gate-tracker') throw 0;
+    for (const [k, f] of Object.entries(j.files || {})) await fileSave(k, await (await fetch(f.data)).blob());
+    S = j.state; save(); render(); toast('Backup restored 🎀');
+  } catch { toast('That file is not a valid backup.'); }
+}
+
+/* ---------- timer tick ---------- */
+setInterval(() => { const c = $('#clock'); if (c) c.textContent = clockText(elapsed(getTimer())); }, 1000);
+
+/* ---------- go! ---------- */
+load();
+route();
+</script>
+</body>
+</html>
